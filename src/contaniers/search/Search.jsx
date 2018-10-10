@@ -14,19 +14,27 @@ class Search extends Component{
     }
 
     onHandelTextChange = (e) => {
-        this.setState({
-            serchText: e.target.value
-        })
 
-        console.log(this.state.serchText)
+        const val = e.target.value
+
+        this.setState({
+            serchText: val
+        })
+        
+        if(val === ''){
+            this.setState({
+                images: []
+            })
+        }else{
+            // do api call
+        }
+
     }
 
     handelAmountChange = (e, index, value) => {
         this.setState({
             amount: value
         })
-
-        console.log(this.state.amount)
     }
 
     render(){
