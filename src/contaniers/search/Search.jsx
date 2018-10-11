@@ -2,14 +2,16 @@ import React, {Component} from 'react'
 import TextField from 'material-ui/TextField'
 import SelectFeild from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import axios from 'axios'
+import ImageResults from '../image-results/ImageResults'
 
 class Search extends Component{
     
     state = {
         serchText:'',
         amount: 15,
-        apiUrl: '',
-        apiKey: '',
+        apiUrl: 'https://pixabay.com/api',
+        apiKey: '10361802-d80edd7c8013de8fa58524476',
         images: []
     }
 
@@ -17,16 +19,22 @@ class Search extends Component{
 
         const val = e.target.value
 
-        this.setState({
-            serchText: val
-        })
-        
-        if(val === ''){
-            this.setState({
-                images: []
+         if(val === ''){
+             this.setState({
+                 images: [],
+                 serchText: ''
+             })
+         }else{
+            this.setState({serchText: val}, () => {
+                axios.get(`${this.state.apiUrl}/?key=${this.state.apiKey}&q=${val}
+                            &image_type=photo&per_page=${this.state.amount}&safesearch=true`)
+                .then( res => {
+                    this.setState({
+                        images: res.data.hits
+                    })
+                })
+                .catch( err => console.log(err))
             })
-        }else{
-            // do api call
         }
 
     }
@@ -37,6 +45,12 @@ class Search extends Component{
         })
     }
 
+    searchText = () => {
+        return this.state.serchText !== ''
+        ? <h4>Sorry, No Images found</h4> 
+        : <h4>Search for images</h4>
+    }
+
     render(){
         return (
             <div>
@@ -44,7 +58,7 @@ class Search extends Component{
                     name=""
                     value={this.state.serchText}
                     onChange={this.onHandelTextChange}
-                    floatingLabelText="Search for any image"
+                    floatingLabelText="Search Here"
                     fullWidth={true}
                 />
                 <br />
@@ -60,6 +74,12 @@ class Search extends Component{
                     <MenuItem value={30} primaryText="30"/>
                     <MenuItem value={50} primaryText="50"/>
                 </SelectFeild>
+                <br />
+                {
+                    this.state.images.length > 0 
+                    ? ( <ImageResults images={this.state.images}/> ) 
+                    : <div style={{textAlign: 'center', color: 'lightgray'}}>{this.searchText()}</div>
+                }
             </div>
         )
     }
