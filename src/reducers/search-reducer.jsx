@@ -1,5 +1,5 @@
 export const searchReducer = (state = {
-    searchText:'dogs',
+    searchText:'abstract',
     amount: 15,
     images: []
 }, action) => {
