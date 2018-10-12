@@ -1,39 +1,31 @@
 import React, {Component} from 'react'
+import { connect } from 'react-redux'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import ZoomIn from 'material-ui/svg-icons/action/zoom-in'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-
+import {openDialog, getCurrentImageSelected} from '../../actions/imageResults-actions'
 
 class ImageResults extends Component {
 
-    state = {
-        open: false,
-        currentImage: ''
-    }
-
     handleOpen = (img) => {
-        this.setState({
-            currentImage: img,
-            open: true
-        })
+        this.props.getCurrentImageSelected(img)
+        this.props.openDialog(true)
     }
 
     handleClose = () => {
-        this.setState({
-            open: false
-        })
+        this.props.openDialog(false)
     }
 
     render() {
      
-        const {images} = this.props
+        const {open, currentImage} = this.props.imageResults
 
         return (
             <div>
                 <GridList cols={3}>
-                    {images.map(img => (
+                    {this.props.images.map(img => (
                         <GridTile
                             title={img.tags}
                             key={img.id}
@@ -55,14 +47,31 @@ class ImageResults extends Component {
                 <Dialog
                     actions={<FlatButton label="Close" primary={true} onClick={this.handleClose} />}
                     modal={false}
-                    open={this.state.open}
+                    open={open}
                     onRequestClose={this.handleClose}
                 >
-                    <img src={this.state.currentImage} alt="" style={{width: '100%', hieght: '100%'}}/>
+                    <img src={currentImage} alt="" style={{width: '100%', hieght: '100%'}}/>
                 </Dialog>
             </div>
         )
     }
 }
 
-export default ImageResults
+const mapStateToProps = (state) => {
+    return {
+        imageResults: state.imageResultsReducer,
+    };
+}
+  
+const mapDispatchToProps = (dispatch) => {
+    return {
+        openDialog: (val) => {
+            dispatch(openDialog(val))
+      },
+      getCurrentImageSelected: (image) => {
+          dispatch(getCurrentImageSelected(image))
+      }
+    };
+}
+  
+export default connect(mapStateToProps,mapDispatchToProps)(ImageResults);
